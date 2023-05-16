@@ -214,7 +214,7 @@ public class EntityPackets {
 					int entityId = packetWrapper.get(Type.VAR_INT, 0);
 					Entity1_10Types.EntityType type = packetWrapper.user().get(EntityTracker.class).getClientEntityTypes().get(entityId);
 					if (type == Entity1_10Types.EntityType.BOAT) {
-						byte yaw = packetWrapper.get(Type.BYTE, 1);
+						byte yaw = packetWrapper.get(Type.BYTE, 0);
 						yaw -= 64;
 						packetWrapper.set(Type.BYTE, 0, yaw);
 						int y = packetWrapper.get(Type.INT, 1);
@@ -362,6 +362,15 @@ public class EntityPackets {
 						attach.write(Type.BOOLEAN, false);
 						PacketUtil.sendPacket(attach, Protocol1_8To1_9.class);
 					}
+					// workaround for boats
+					Entity1_10Types.EntityType vtype = packetWrapper.user().get(EntityTracker.class).getClientEntityTypes().get(vehicle);
+					if (vtype == Entity1_10Types.EntityType.BOAT) {
+						PacketWrapper attach = PacketWrapper.create(0x1B, null, packetWrapper.user());
+						attach.write(Type.INT, -1);
+						attach.write(Type.INT, vehicle);
+						attach.write(Type.BOOLEAN, false);
+						PacketUtil.sendPacket(attach, Protocol1_8To1_9.class);
+					}
 				});
 			}
 		});
@@ -383,7 +392,7 @@ public class EntityPackets {
 					int entityId = packetWrapper.get(Type.VAR_INT, 0);
 					Entity1_10Types.EntityType type = packetWrapper.user().get(EntityTracker.class).getClientEntityTypes().get(entityId);
 					if (type == Entity1_10Types.EntityType.BOAT) {
-						byte yaw = packetWrapper.get(Type.BYTE, 1);
+						byte yaw = packetWrapper.get(Type.BYTE, 0);
 						yaw -= 64;
 						packetWrapper.set(Type.BYTE, 0, yaw);
 						int y = packetWrapper.get(Type.INT, 1);
